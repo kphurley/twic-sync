@@ -1,3 +1,5 @@
+// This is the entry point for the electron application
+
 const path = require('path');
 const { app, BrowserWindow } = require('electron');
 
@@ -10,22 +12,18 @@ function createWindow () {
     }
   });
 
-  win.loadFile('index.html')
+  win.loadFile('./dist/index.html')
 }
 
 app.whenReady().then(() => {
   createWindow()
-});
 
-// Windows/Linux
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit()
-});
+  // Windows/Linux
+  app.on('window-all-closed', function () {
+    if (process.platform !== 'darwin') app.quit()
+  });
 
-// MacOS
-app.whenReady().then(() => {
-  createWindow()
-
+  // MacOS
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
