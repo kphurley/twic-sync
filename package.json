@@ -2,13 +2,30 @@
   "name": "twic-sync",
   "version": "0.0.1",
   "description": "A TWIC file sync and download tool",
-  "main": "main.js",
+  "main": "./main.js",
   "scripts": {
+    "build": "webpack",
     "start": "electron ."
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
   },
   "author": "Kevin Hurley",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^13.1.2"
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.7",
+    "@babel/preset-react": "^7.14.5",
+    "babel-loader": "^8.2.2",
+    "electron": "^13.1.2",
+    "webpack": "^5.41.1",
+    "webpack-cli": "^4.7.2"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   }
 }
