@@ -1,0 +1,119 @@
+.App {
+  font-family: 'Roboto', sans-serif;
+  background-color: #E5E5E5;
+}
+
+.Header {
+  font-family: 'Cambo', serif;
+  font-size: xx-large;
+  color: red;
+  background-color: #C4C4C4;
+  padding: 16px;
+}
+
+.layout {
+  display: flex;
+}
+
+.button {
+  height: 64px;
+  width: 192px;
+  font-size: xx-large;
+}
+
+.button-primary {
+  background-color: #6F85F4;
+}
+
+.button-secondary {
+  background-color: #FFFFFF;
+}
+
+.button-secondary-sm {
+  background-color: #FFFFFF;
+  height: 32px;
+  width: 128px;
+  font-size: small;
+}
+
+.button-refresh {
+  background-color: #66A96D;
+}
+
+label {
+  font-size: small;
+}
+
+input {
+  font-size: small;
+  width: 100%
+}
+
+.flex-vertical {
+  flex-direction: column;
+}
+
+.flex-horizontal {
+  flex-direction: row;
+}
+
+.flex-horizontal-item {
+  flex: 1;
+}
+
+.SyncStatus {
+  background-color: #C4C4C4;
+  padding: 8px;
+  margin: 16px;
+}
+
+.SyncStatusItem {
+  display: flex;
+  justify-content: center;
+  margin: 8px;
+}
+
+.DataAvailable {
+  background-color: #878787;
+  padding: 8px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: larger;
+}
+
+.DataAvailableIcon {
+  padding: 0px 8px 0px 8px;
+}
+
+.OptionsPanel {
+  padding: 16px;
+  margin: 16px;
+}
+
+.Footer {
+  padding: 8px;
+}
+
+.footer-items {
+  display: flex;
+}
+
+.footer-items-0 {
+  align-items: flex-end;
+}
+
+.footer-items-1 {
+  justify-content: flex-end;
+}
+
+.LinkToCavemanChess {
+  display: flex;
+  justify-self: flex-end;
+}
+
+.DonateToTwicPanel {
+  align-self: flex-end;
+  font-size: small;
+}
