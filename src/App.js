@@ -24,6 +24,7 @@ const MAIN_SCREEN_STATES = [
 export default function App() {
   const [ appState, setAppState ] = useState(APP_STATES.SYNCHING);
   const [ availableUrls, setAvailableUrls ] = useState([]);
+  const [ directory, setDirectory ] = useState(window.localStorage.getItem('directory'));
 
   useEffect(() => {
     fetchTwicUrls().then((urls) => {
@@ -36,8 +37,15 @@ export default function App() {
     });
   }, []);
 
+  const onDirectoryChange = (e) => {
+    console.log(e.target.value);
+    const newDir = e.target.value;
+    window.localStorage.setItem('directory', newDir);
+    setDirectory(newDir);
+  }
+
   const shouldRenderMainScreen = MAIN_SCREEN_STATES.includes(appState);
-  const screenProps = { appState, availableUrls };
+  const screenProps = { appState, availableUrls, directory, onDirectoryChange };
 
   return (
     <div className="App">

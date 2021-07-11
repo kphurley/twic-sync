@@ -7,7 +7,7 @@ export default function OptionsPanel(props) {
   return (
     <Layout type="flex-vertical" className="OptionsPanel">
       <label for="directory">Local File Directory</label>
-      <input type="text" id="directory" name="directory" value={props.directory} onChange={() => {}}></input>
+      <input type="text" id="directory" name="directory" value={props.directory} onChange={props.onDirectoryChange}></input>
     </Layout>
   )
 };

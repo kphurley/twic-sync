@@ -8,7 +8,9 @@ function DonateToTwicPanel(props) {
   return (
     <div className="DonateToTwicPanel">
       <div>Data courtesy of https://theweekinchess.com/</div>
-      <Button type="secondary-sm" onClick={() => {}} text="Donate to TWIC" />
+      <a href="https://www.theweekinchess.com/" target="_blank">
+        <Button type="secondary-sm" text="Donate to TWIC" />
+      </a>
     </div>
   );
 }
