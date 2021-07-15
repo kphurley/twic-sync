@@ -26,8 +26,9 @@ export default function App() {
   const [ availableUrls, setAvailableUrls ] = useState([]);
   const [ directory, setDirectory ] = useState(window.localStorage.getItem('directory'));
 
-  useEffect(() => {
-    fetchTwicUrls().then((urls) => {
+  // This should also run when a "sync" button is pressed
+  const syncFilesAndSetAppState = () => {{
+    return fetchTwicUrls(directory).then((urls) => {
       if (urls.length == 0) {
         setAppState(APP_STATES.UP_TO_DATE);
       } else {
@@ -35,6 +36,13 @@ export default function App() {
         setAvailableUrls(urls);
       }
     });
+  }}
+
+  useEffect(() => {
+    // This works to register events that we need to respond with app state changes
+    window.electron.registerHandler('ping', (arg) => console.log('sent from main', arg));
+    
+    syncFilesAndSetAppState();
   }, []);
 
   const onDirectoryChange = (e) => {
@@ -45,7 +53,13 @@ export default function App() {
   }
 
   const shouldRenderMainScreen = MAIN_SCREEN_STATES.includes(appState);
-  const screenProps = { appState, availableUrls, directory, onDirectoryChange };
+  const screenProps = { 
+    appState,
+    availableUrls,
+    directory,
+    onDirectoryChange,
+    onSyncInit: syncFilesAndSetAppState
+  };
 
   return (
     <div className="App">

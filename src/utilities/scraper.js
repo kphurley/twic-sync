@@ -1,3 +1,5 @@
+import { checkUrlsForSync } from './fileHandlers';
+
 const TWIC_URL = 'https://theweekinchess.com';
 const TWIC_HTML_FOLDER = 'html'
 const TWIC_ZIPS_FOLDER = 'zips';
@@ -11,7 +13,8 @@ const PGN_FORMAT = new RegExp(`${TWIC_URL}/${TWIC_ZIPS_FOLDER}/${TWIC_PGN_FORMAT
 const HTML_FORMAT = new RegExp(`${TWIC_URL}/${TWIC_HTML_FOLDER}/${TWIC_HTML_FORMAT_REGEX}`, 'g');
 const CBV_FORMAT = new RegExp(`${TWIC_URL}/${TWIC_ZIPS_FOLDER}/${TWIC_CBV_FORMAT_REGEX}`, 'g');
 
-const fetchTwicUrls = () => {
+// Note that we can use fetch here because this is consumed by a browser
+const fetchTwicUrls = (dir) => {
   return fetch('https://theweekinchess.com/twic').then((res) => {
     return res.text();
   }).then((htmlText) => {
@@ -24,7 +27,11 @@ const fetchTwicUrls = () => {
     // const htmlUrls = anchorElemHrefs.filter((href) => HTML_FORMAT.test(href));
     // const cbvUrls = anchorElemHrefs.filter((href) => CBV_FORMAT.test(href));
 
-    return pgnUrls;
+    // Testing for now, maybe not the right place for this
+    const unsynchedUrls = checkUrlsForSync(pgnUrls, dir);
+    console.log('unsynched', unsynchedUrls);
+
+    return unsynchedUrls;
   }).catch((err) => {
     console.warn('Something went wrong.', err);
   });

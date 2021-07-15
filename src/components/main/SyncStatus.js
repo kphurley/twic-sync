@@ -5,6 +5,7 @@ import Layout from '../shared/Layout';
 
 import attentionIcon from '../../assets/attention.png';
 
+// Need a "synching" status with a spinner
 function DataAvailableIndicator(props) {
   const dataAvailableIcon = <img src={attentionIcon} alt="attention" className="DataAvailableIcon" />;
   const dataAvailableText = "Data Available!";
@@ -22,7 +23,7 @@ export default function SyncStatus(props) {
   return (
     <Layout type="flex-vertical" className="SyncStatus" itemClassName="SyncStatusItem">
       <DataAvailableIndicator {...props} />
-      <Button type="primary" onClick={() => {}} text="Sync!" />
+      <Button type="primary" onClick={props.onSyncInit} text="Sync!" />
     </Layout>
   )
 };
