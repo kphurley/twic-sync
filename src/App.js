@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 import { MainScreen, SyncScreen } from './components';
 
-import { fetchTwicUrls } from './utilities/scraper';
+import { getTwicUrlStatuses } from './utilities/scraper';
+import { performSync } from './utilities/fileHandlers';
 
 import './App.css';
 
@@ -23,26 +24,48 @@ const MAIN_SCREEN_STATES = [
 
 export default function App() {
   const [ appState, setAppState ] = useState(APP_STATES.SYNCHING);
-  const [ availableUrls, setAvailableUrls ] = useState([]);
+  const [ urlStatuses, setUrlStatuses ] = useState([]);
   const [ directory, setDirectory ] = useState(window.localStorage.getItem('directory'));
 
-  // This should also run when a "sync" button is pressed
-  const syncFilesAndSetAppState = () => {{
-    return fetchTwicUrls(directory).then((urls) => {
-      if (urls.length == 0) {
-        setAppState(APP_STATES.UP_TO_DATE);
-      } else {
-        setAppState(APP_STATES.DATA_AVAILABLE);
-        setAvailableUrls(urls);
-      }
-    });
-  }}
+  const handleUrlStatuses = (newUrlStatuses) => {
+    const hasUnsynchedUrls = !!(newUrlStatuses.find((u) => u.status === "unsynched"));
+    const hasErroredUrls = !!(newUrlStatuses.find((u) => u.status === "errored"));
+
+    if (hasErroredUrls) {
+      setAppState(APP_STATES.ERRORED);
+    } else if (hasUnsynchedUrls) {
+      setAppState(APP_STATES.DATA_AVAILABLE);
+    } else {
+      setAppState(APP_STATES.UP_TO_DATE);
+    }
+
+    setUrlStatuses(newUrlStatuses);
+  };
+
+  // This should run on load
+  const getUrlStatusesAndSetAppState = () => {{
+    setAppState(APP_STATES.SYNCHING);
+
+    return getTwicUrlStatuses(directory).then(handleUrlStatuses).catch((e) => console.error(e));
+  }};
+
+  // This should run only when a "sync" button is pressed and we have data available
+  const downloadMissingFiles = () => {{
+    // This actually doesn't trigger a re-render, so this state isn't set
+    // TODO - this action should just set the selecting files state, and that screen then does the download
+    setAppState(APP_STATES.SYNCHING);
+
+    const unsynchedUrls = urlStatuses.filter((u) => u.status === "unsynched").map((status) => status.url);
+
+    return performSync(unsynchedUrls, directory).then(handleUrlStatuses).catch((e) => console.error(e));
+  }};
 
   useEffect(() => {
     // This works to register events that we need to respond with app state changes
+    // Maybe this isn't needed?
     window.electron.registerHandler('ping', (arg) => console.log('sent from main', arg));
-    
-    syncFilesAndSetAppState();
+
+    getUrlStatusesAndSetAppState();
   }, []);
 
   const onDirectoryChange = (e) => {
@@ -50,15 +73,17 @@ export default function App() {
     const newDir = e.target.value;
     window.localStorage.setItem('directory', newDir);
     setDirectory(newDir);
+    getUrlStatusesAndSetAppState();
   }
 
   const shouldRenderMainScreen = MAIN_SCREEN_STATES.includes(appState);
   const screenProps = { 
     appState,
-    availableUrls,
+    urlStatuses,
     directory,
     onDirectoryChange,
-    onSyncInit: syncFilesAndSetAppState
+    onRefresh: getUrlStatusesAndSetAppState,
+    onSyncInit: downloadMissingFiles
   };
 
   return (

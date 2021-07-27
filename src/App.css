@@ -25,6 +25,10 @@
   background-color: #6F85F4;
 }
 
+.button-refresh {
+  background-color: #66A96D;
+}
+
 .button-secondary {
   background-color: #FFFFFF;
 }
@@ -83,7 +87,7 @@ input {
   font-size: larger;
 }
 
-.DataAvailableIcon {
+.DataAvailable-icon {
   padding: 0px 8px 0px 8px;
 }
 

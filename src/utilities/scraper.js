@@ -14,7 +14,7 @@ const HTML_FORMAT = new RegExp(`${TWIC_URL}/${TWIC_HTML_FOLDER}/${TWIC_HTML_FORM
 const CBV_FORMAT = new RegExp(`${TWIC_URL}/${TWIC_ZIPS_FOLDER}/${TWIC_CBV_FORMAT_REGEX}`, 'g');
 
 // Note that we can use fetch here because this is consumed by a browser
-const fetchTwicUrls = (dir) => {
+const getTwicUrlStatuses = (dir) => {
   return fetch('https://theweekinchess.com/twic').then((res) => {
     return res.text();
   }).then((htmlText) => {
@@ -28,10 +28,11 @@ const fetchTwicUrls = (dir) => {
     // const cbvUrls = anchorElemHrefs.filter((href) => CBV_FORMAT.test(href));
 
     // Testing for now, maybe not the right place for this
-    const unsynchedUrls = checkUrlsForSync(pgnUrls, dir);
-    console.log('unsynched', unsynchedUrls);
+    const urlSyncStatuses = checkUrlsForSync(pgnUrls, dir);
+    console.log('unsynched', urlSyncStatuses);
 
-    return unsynchedUrls;
+    // We get back a JSON string, parse to an object
+    return JSON.parse(urlSyncStatuses);
   }).catch((err) => {
     console.warn('Something went wrong.', err);
   });
@@ -43,5 +44,5 @@ const parseIntoDocument = (str) => {
 }
 
 export {
-  fetchTwicUrls
+  getTwicUrlStatuses
 };
