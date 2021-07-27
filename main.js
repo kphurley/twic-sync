@@ -7,9 +7,6 @@ const axios = require('axios')
 
 const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 
-// This is likely going to get BIG.
-const fileState = {};
-
 function createWindow () {
   const win = new BrowserWindow({
     width: 620,
@@ -57,8 +54,6 @@ function downloadFile(url) {
   })
 }
 
-
-
 ipcMain.on('check-urls', (event, { urls, dir }) => {
   console.log('check-urls received: ', urls);
   console.log('Directory received: ', dir);
@@ -68,53 +63,23 @@ ipcMain.on('check-urls', (event, { urls, dir }) => {
     event.returnValue = null;
   }
   else {
-    // Download each file, to `${app.getPath('appData')}\twic-sync` (use path for this)
-    // Only download what we dont have
-    // This is very slow if we don't have any of the files...
-    const urlPromises = urls.map((url) => () => {
+    const urlStatuses = urls.map((url) => {
       const urlParts = url.split('/');
       const fileName = urlParts[urlParts.length - 1];
-      const filePath = path.join(app.getPath('appData'), 'twic-sync', fileName);
+      const filePath = path.join(dir, fileName);
 
-      if (!fs.existsSync(filePath)) {
-        console.log("Downloading to ", filePath, " ...");
+      console.log(filePath);
 
-        // Need to throttle the requests to avoid timeouts
-        return sleep(100)
-        .then(() => {
-          return downloadFile(url);
-        })
-        .then((res) => {
-          const arrayBuffer = res.data;
-          fs.appendFileSync(filePath, Buffer.from(arrayBuffer));
-          console.log("Download to ", filePath, " completed.");
-          return { url, status: "downloaded" };
-        })
+      if (fs.existsSync(filePath)) {
+        return { url, status: "synched" };
       }
       else {
-        return Promise.resolve({ url, status: "found" });
+        return { url, status: "unsynched" };
       }
     });
 
-    resolvePromisesSerially(urlPromises).then((resolved) => {
-      resolved.forEach((resolvedValue) => {
-        if(resolvedValue) console.log(resolvedValue);
-      });
-      // For each file in the appData path
-      // Open the zip, read contents
-      // And write the contents to the state hash
-
-      // Compare each file to sync with whats in dir
-      // Any file in the hash that's different from dir (or not in dir at all)
-      // should be kept in the hash, the others can be discarded
-
-      // Send the state hash back to the renderer to tell the UI what needs doing
-
-      // This is just a temporary mod of arg just to make sure this works (it does)
-      const reply = [urls[0]];
-
-      event.returnValue = reply;
-    })
+    // We can't send back an object, so send as a JSON string
+    event.returnValue = JSON.stringify(urlStatuses);
   }
 });
 
@@ -123,12 +88,55 @@ ipcMain.on('sync-urls', (event, { urls, dir }) => {
   console.log('Directory received: ', dir);
 
   // Do the actual saving of files here
-  // Read the file contents from the state hash
-  // And write them to dir
+  // Only download what we dont have
+  // This is very slow if we don't have any of the files...
+  const urlPromises = urls.map((url) => () => {
+    const urlParts = url.split('/');
+    const fileName = urlParts[urlParts.length - 1];
+    const filePath = path.join(dir, fileName);
 
-  const reply = [urls[0]];
+    if (!fs.existsSync(filePath)) {
+      console.log("Downloading to ", filePath, " ...");
 
-  event.returnValue = reply;
+      // Need to throttle the requests to avoid timeouts
+      return sleep(100)
+      .then(() => {
+        return downloadFile(url);
+      })
+      .then((res) => {
+        const arrayBuffer = res.data;
+
+        let status;
+        try {
+          fs.appendFileSync(filePath, Buffer.from(arrayBuffer));
+          console.log("Download to ", filePath, " completed.");
+          status = "synched";
+        } catch (err) {
+          console.log("couldn't save file");
+          console.log(err);
+          status = "errored";
+        }
+        
+        return { url, status };
+      })
+      .catch((err) => {
+        return { url, status: "errored", error: err };
+      })
+    }
+    else {
+      return Promise.resolve({ url, status: "found" });
+    }
+  });
+
+  // Perform each save in serial
+  resolvePromisesSerially(urlPromises).then((resolved) => {
+    resolved.forEach((resolvedValue) => {
+      if(resolvedValue) console.log(resolvedValue);
+    });
+
+    // Send back the response to the UI with the state of each url
+    event.returnValue = resolved;
+  });
 });
 
 app.whenReady().then(() => {
