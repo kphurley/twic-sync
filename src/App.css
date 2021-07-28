@@ -25,6 +25,10 @@
   background-color: #6F85F4;
 }
 
+.button-disabled {
+  background-color: #878787;
+}
+
 .button-refresh {
   background-color: #66A96D;
 }
@@ -120,4 +124,45 @@ input {
 .DonateToTwicPanel {
   align-self: flex-end;
   font-size: small;
+}
+
+.SyncScreen-top-text {
+  font-size: x-large;
+  text-align: center;
+}
+
+.SyncScreen-files-area {
+  position: relative;
+  height: 65vh;
+}
+
+.SyncScreen-filename-space {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.SyncScreen-filename-container {
+  display: flex;
+  overflow: auto;
+  flex-wrap: wrap;
+}
+
+.filename-item {
+  padding: 2px;
+  margin: 2px;
+  height: 24px;
+  width: 128px;
+}
+
+.selected {
+  background-color: #6F85F4;
+}
+
+.unselected {
+  background-color: #FFFFFF;
 }

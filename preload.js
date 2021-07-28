@@ -20,7 +20,7 @@ contextBridge.exposeInMainWorld(
       return ipcRenderer.sendSync('check-urls', { urls, dir })
     },
     syncUrls: (urls, dir) => {
-      return ipcRenderer.sendSync('sync-urls', { urls, dir })
+      return ipcRenderer.send('sync-urls', { urls, dir })
     },
     registerHandler: (event, handler) => ipcRenderer.on(event, (e, arg) => handler(arg)) 
   }

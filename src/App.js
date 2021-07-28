@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { MainScreen, SyncScreen } from './components';
 
 import { getTwicUrlStatuses } from './utilities/scraper';
-import { performSync } from './utilities/fileHandlers';
+import { registerHandler, performSync } from './utilities/fileHandlers';
 
 import './App.css';
 
@@ -12,6 +12,7 @@ const APP_STATES = {
   DATA_AVAILABLE: "dataAvailable",
   UP_TO_DATE: "upToDate",
   ERRORED: "errored",
+  DOWNLOADING_FILES: "downloadingFiles",
   SELECTING_FILES: "selectingFiles"
 }
 
@@ -49,27 +50,25 @@ export default function App() {
     return getTwicUrlStatuses(directory).then(handleUrlStatuses).catch((e) => console.error(e));
   }};
 
-  // This should run only when a "sync" button is pressed and we have data available
-  const downloadMissingFiles = () => {{
-    // This actually doesn't trigger a re-render, so this state isn't set
-    // TODO - this action should just set the selecting files state, and that screen then does the download
-    setAppState(APP_STATES.SYNCHING);
-
-    const unsynchedUrls = urlStatuses.filter((u) => u.status === "unsynched").map((status) => status.url);
-
-    return performSync(unsynchedUrls, directory).then(handleUrlStatuses).catch((e) => console.error(e));
+  const goToFileSelectionScreen = () => {{
+    setAppState(APP_STATES.SELECTING_FILES);
   }};
 
-  useEffect(() => {
-    // This works to register events that we need to respond with app state changes
-    // Maybe this isn't needed?
-    window.electron.registerHandler('ping', (arg) => console.log('sent from main', arg));
+  const downloadSelectedFiles = (selectedUrls) => {
+    const unsynchedUrls = urlStatuses
+      .filter((u) => u.status === "unsynched" && selectedUrls.includes(u.url))
+      .map((status) => status.url);
 
+    performSync(unsynchedUrls, directory);
+  };
+
+  useEffect(() => {
     getUrlStatusesAndSetAppState();
+
+    registerHandler('sync-urls-reply', handleUrlStatuses);
   }, []);
 
   const onDirectoryChange = (e) => {
-    console.log(e.target.value);
     const newDir = e.target.value;
     window.localStorage.setItem('directory', newDir);
     setDirectory(newDir);
@@ -82,8 +81,11 @@ export default function App() {
     urlStatuses,
     directory,
     onDirectoryChange,
+    setAppState,
+    onBackButtonPress: getUrlStatusesAndSetAppState,
     onRefresh: getUrlStatusesAndSetAppState,
-    onSyncInit: downloadMissingFiles
+    onSyncInit: goToFileSelectionScreen,
+    onSync: downloadSelectedFiles
   };
 
   return (

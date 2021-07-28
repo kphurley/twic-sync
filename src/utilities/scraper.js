@@ -29,7 +29,6 @@ const getTwicUrlStatuses = (dir) => {
 
     // Testing for now, maybe not the right place for this
     const urlSyncStatuses = checkUrlsForSync(pgnUrls, dir);
-    console.log('unsynched', urlSyncStatuses);
 
     // We get back a JSON string, parse to an object
     return JSON.parse(urlSyncStatuses);
