@@ -7,7 +7,8 @@ const axios = require('axios');
 
 const logger = require('electron-log');
 
-const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+// Enable this for development
+//const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 
 function createWindow () {
   const win = new BrowserWindow({
@@ -121,9 +122,10 @@ ipcMain.on('sync-urls', (event, { urls, dir }) => {
 });
 
 app.whenReady().then(() => {
-  installExtension(REACT_DEVELOPER_TOOLS, { loadExtensionOptions: { allowFileAccess: true }, forceDownload: false })
-    .then((name) => logger.log(`Added Extension:  ${name}`))
-    .catch((err) => logger.log('An error occurred: ', err));
+  // Enable this for development
+  // installExtension(REACT_DEVELOPER_TOOLS, { loadExtensionOptions: { allowFileAccess: true }, forceDownload: false })
+  //   .then((name) => logger.log(`Added Extension:  ${name}`))
+  //   .catch((err) => logger.log('An error occurred: ', err));
 
   createWindow()
 
