@@ -12,7 +12,9 @@
       "@babel/preset-env",
       "@babel/preset-react"
     ],
-    "plugins": ["@emotion"]
+    "plugins": [
+      "@emotion"
+    ]
   },
   "author": "Kevin Hurley",
   "license": "ISC",
@@ -20,6 +22,7 @@
     "@babel/core": "^7.14.6",
     "@babel/preset-env": "^7.14.7",
     "@babel/preset-react": "^7.14.5",
+    "@electron-forge/cli": "^6.0.0-beta.59",
     "@emotion/babel-plugin": "^11.3.0",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.2.6",
@@ -33,6 +36,7 @@
   "dependencies": {
     "adm-zip": "^0.5.5",
     "axios": "^0.21.1",
+    "electron-log": "^4.4.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-spinners": "^0.11.0"

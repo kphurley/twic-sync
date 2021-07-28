@@ -9,31 +9,11 @@ import erroredIcon from '../../assets/x-button.png';
 
 import SyncLoader from "react-spinners/SyncLoader";
 
-/*
-from App.js
 
-// This is what's passed
-const APP_STATES = {
-  SYNCHING: "syncing",
-  DATA_AVAILABLE: "dataAvailable",
-  UP_TO_DATE: "upToDate",
-  ERRORED: "errored",
-  SELECTING_FILES: "selectingFiles"
-}
-
-const MAIN_SCREEN_STATES = [
-  APP_STATES.SYNCHING,
-  APP_STATES.DATA_AVAILABLE,
-  APP_STATES.UP_TO_DATE,
-  APP_STATES.ERRORED
-]
-*/
-
-// Need a "synching" status with a spinner
 function DataAvailableIndicator(props) {
   const indicatorMap = {
     syncing: {
-      icon: <SyncLoader size={10} />,  // Put spinner here
+      icon: <SyncLoader size={10} />,
       text: "Synching..."
     },
     dataAvailable: {

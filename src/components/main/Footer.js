@@ -4,7 +4,7 @@ import Button from '../shared/Button';
 import Layout from '../shared/Layout';
 import cavemanIcon from '../../assets/caveman.png';
 
-function DonateToTwicPanel(props) {
+function DonateToTwicPanel() {
   return (
     <div className="DonateToTwicPanel">
       <div>Data courtesy of https://theweekinchess.com/</div>
@@ -15,7 +15,7 @@ function DonateToTwicPanel(props) {
   );
 }
 
-function LinkToCavemanChess(props) {
+function LinkToCavemanChess() {
   return (
     <div className="LinkToCavemanChess">
       <a href="https://www.cavemanchess.com/" target="_blank">
@@ -25,7 +25,7 @@ function LinkToCavemanChess(props) {
   );
 }
 
-export default function Footer(props) {
+export default function Footer() {
   return (
     <Layout type='flex-horizontal' className="Footer" itemClassName="footer-items">
       <DonateToTwicPanel />

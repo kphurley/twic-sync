@@ -3,14 +3,16 @@
 const fs = require('fs')   
 const path = require('path');
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
-const axios = require('axios')
+const axios = require('axios');
+
+const logger = require('electron-log');
 
 const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 
 function createWindow () {
   const win = new BrowserWindow({
-    width: 620,
-    height: 440,
+    width: 630,
+    height: 460,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
@@ -24,16 +26,9 @@ function createWindow () {
 
   // This removes the menu bar on Windows
   // We should only do this for production
-  // win.setMenu(null);
+  win.setMenu(null);
 
   win.loadFile('./dist/index.html');
-}
-
-function arrayBufferToString( buffer, encoding, callback ) {
-  var blob = new Blob([buffer],{type:'text/plain'});
-  var reader = new FileReader();
-  reader.onload = function(evt){ callback(evt.target.result); };
-  reader.readAsText(blob, encoding);
 }
 
 // We need this as a simple throttle mechanism when downloading files
@@ -55,11 +50,8 @@ function downloadFile(url) {
 }
 
 ipcMain.on('check-urls', (event, { urls, dir }) => {
-  console.log('check-urls received: ', urls);
-  console.log('Directory received: ', dir);
-
   if (!urls || !Array.isArray(urls)) {
-    console.log("bad urls value detected...returning...");
+    logger.log("bad urls value detected...returning...");
     event.returnValue = null;
   }
   else {
@@ -67,8 +59,6 @@ ipcMain.on('check-urls', (event, { urls, dir }) => {
       const urlParts = url.split('/');
       const fileName = urlParts[urlParts.length - 1];
       const filePath = path.join(dir, fileName);
-
-      console.log(filePath);
 
       if (fs.existsSync(filePath)) {
         return { url, status: "synched" };
@@ -84,9 +74,6 @@ ipcMain.on('check-urls', (event, { urls, dir }) => {
 });
 
 ipcMain.on('sync-urls', (event, { urls, dir }) => {
-  console.log('Sync-urls received: ', urls);
-  console.log('Directory received: ', dir);
-
   // Do the actual saving of files here
   // Only download what we dont have
   // This is very slow if we don't have any of the files...
@@ -96,8 +83,6 @@ ipcMain.on('sync-urls', (event, { urls, dir }) => {
     const filePath = path.join(dir, fileName);
 
     if (!fs.existsSync(filePath)) {
-      console.log("Downloading to ", filePath, " ...");
-
       // Need to throttle the requests to avoid timeouts
       return sleep(100)
       .then(() => {
@@ -109,11 +94,11 @@ ipcMain.on('sync-urls', (event, { urls, dir }) => {
         let status;
         try {
           fs.appendFileSync(filePath, Buffer.from(arrayBuffer));
-          console.log("Download to ", filePath, " completed.");
+          logger.log("Download to ", filePath, " completed.");
           status = "synched";
         } catch (err) {
-          console.log("couldn't save file");
-          console.log(err);
+          logger.log("couldn't save file");
+          logger.log(err);
           status = "errored";
         }
         
@@ -130,19 +115,15 @@ ipcMain.on('sync-urls', (event, { urls, dir }) => {
 
   // Perform each save in serial
   resolvePromisesSerially(urlPromises).then((resolved) => {
-    resolved.forEach((resolvedValue) => {
-      if(resolvedValue) console.log(resolvedValue);
-    });
-
     // Send back the response to the UI with the state of each url
-    event.returnValue = resolved;
+    event.reply('sync-urls-reply', resolved);
   });
 });
 
 app.whenReady().then(() => {
   installExtension(REACT_DEVELOPER_TOOLS, { loadExtensionOptions: { allowFileAccess: true }, forceDownload: false })
-    .then((name) => console.log(`Added Extension:  ${name}`))
-    .catch((err) => console.log('An error occurred: ', err));
+    .then((name) => logger.log(`Added Extension:  ${name}`))
+    .catch((err) => logger.log('An error occurred: ', err));
 
   createWindow()
 
