@@ -11,3 +11,8 @@ export function performSync(urls, dir) {
 export function registerHandler(event, handler) {
   return window.electron.registerHandler(event, handler);
 }
+
+export function documentsDir() {
+  return window.electron.documentsDir;
+}
+
