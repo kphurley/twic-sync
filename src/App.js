@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { MainScreen, SyncScreen } from './components';
 
 import { getTwicUrlStatuses } from './utilities/scraper';
-import { registerHandler, performSync } from './utilities/fileHandlers';
+import { registerHandler, performSync, documentsDir } from './utilities/fileHandlers';
 
 import './App.css';
 
@@ -29,8 +29,8 @@ export default function App() {
   const [ directory, setDirectory ] = useState(window.localStorage.getItem('directory'));
 
   const handleUrlStatuses = (newUrlStatuses) => {
-    const hasUnsynchedUrls = !!(newUrlStatuses.find((u) => u.status === "unsynched"));
-    const hasErroredUrls = !!(newUrlStatuses.find((u) => u.status === "errored"));
+    const hasUnsynchedUrls = newUrlStatuses && !!(newUrlStatuses.find((u) => u.status === "unsynched"));
+    const hasErroredUrls = !newUrlStatuses || !!(newUrlStatuses.find((u) => u.status === "errored"));
 
     if (hasErroredUrls) {
       setAppState(APP_STATES.ERRORED);

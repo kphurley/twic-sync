@@ -50,9 +50,27 @@ function downloadFile(url) {
   })
 }
 
-ipcMain.on('check-urls', (event, { urls, dir }) => {
+function hasInvalidUrlsAndDir(urls, dir) {
   if (!urls || !Array.isArray(urls)) {
     logger.log("bad urls value detected...returning...");
+    return true;
+  }
+  else if (!dir) {
+    // No-op if no directory specified
+    logger.log("No directory given...returning...");
+    return true;
+  }
+  else if (!fs.existsSync(dir)) {
+    // No-op if the directory doesn't exist
+    logger.log(`Directory ${dir} does not exist...returning...`);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+ipcMain.on('check-urls', (event, { urls, dir }) => {
+  if (hasInvalidUrlsAndDir(urls, dir)) {
     event.returnValue = null;
   }
   else {
@@ -75,50 +93,55 @@ ipcMain.on('check-urls', (event, { urls, dir }) => {
 });
 
 ipcMain.on('sync-urls', (event, { urls, dir }) => {
-  // Do the actual saving of files here
-  // Only download what we dont have
-  // This is very slow if we don't have any of the files...
-  const urlPromises = urls.map((url) => () => {
-    const urlParts = url.split('/');
-    const fileName = urlParts[urlParts.length - 1];
-    const filePath = path.join(dir, fileName);
-
-    if (!fs.existsSync(filePath)) {
-      // Need to throttle the requests to avoid timeouts
-      return sleep(100)
-      .then(() => {
-        return downloadFile(url);
-      })
-      .then((res) => {
-        const arrayBuffer = res.data;
-
-        let status;
-        try {
-          fs.appendFileSync(filePath, Buffer.from(arrayBuffer));
-          logger.log("Download to ", filePath, " completed.");
-          status = "synched";
-        } catch (err) {
-          logger.log("couldn't save file");
-          logger.log(err);
-          status = "errored";
-        }
-        
-        return { url, status };
-      })
-      .catch((err) => {
-        return { url, status: "errored", error: err };
-      })
-    }
-    else {
-      return Promise.resolve({ url, status: "found" });
-    }
-  });
-
-  // Perform each save in serial
-  resolvePromisesSerially(urlPromises).then((resolved) => {
-    // Send back the response to the UI with the state of each url
-    event.reply('sync-urls-reply', resolved);
-  });
+  if (hasInvalidUrlsAndDir(urls, dir)) {
+    event.reply('sync-urls-reply', null);
+  }
+  else {
+    // Do the actual saving of files here
+    // Only download what we dont have
+    // This is very slow if we don't have any of the files...
+    const urlPromises = urls.map((url) => () => {
+      const urlParts = url.split('/');
+      const fileName = urlParts[urlParts.length - 1];
+      const filePath = path.join(dir, fileName);
+  
+      if (!fs.existsSync(filePath)) {
+        // Need to throttle the requests to avoid timeouts
+        return sleep(100)
+        .then(() => {
+          return downloadFile(url);
+        })
+        .then((res) => {
+          const arrayBuffer = res.data;
+  
+          let status;
+          try {
+            fs.appendFileSync(filePath, Buffer.from(arrayBuffer));
+            logger.log("Download to ", filePath, " completed.");
+            status = "synched";
+          } catch (err) {
+            logger.log("couldn't save file");
+            logger.log(err);
+            status = "errored";
+          }
+          
+          return { url, status };
+        })
+        .catch((err) => {
+          return { url, status: "errored", error: err };
+        })
+      }
+      else {
+        return Promise.resolve({ url, status: "found" });
+      }
+    });
+  
+    // Perform each save in serial
+    resolvePromisesSerially(urlPromises).then((resolved) => {
+      // Send back the response to the UI with the state of each url
+      event.reply('sync-urls-reply', resolved);
+    });
+  }
 });
 
 app.whenReady().then(() => {
