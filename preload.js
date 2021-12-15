@@ -1,10 +1,11 @@
-const { app, contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
-// This works for sending
-// registerHandler also appears to work as well
 contextBridge.exposeInMainWorld(
   'electron',
   {
+    checkDirectory: (dir) => {
+      return ipcRenderer.sendSync('check-directory', { dir })
+    },
     checkUrls: (urls, dir) => {
       return ipcRenderer.sendSync('check-urls', { urls, dir })
     },

@@ -27,6 +27,10 @@ function DataAvailableIndicator(props) {
     errored: {
       icon: <img src={erroredIcon} alt="errored" className="ErroredIcon" />,
       text: "Errored"
+    },
+    invalidDirectory: {
+      icon: <span />,
+      text: "Enter Valid Directory"
     }
   }
 
