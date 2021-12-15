@@ -50,24 +50,31 @@ function downloadFile(url) {
   })
 }
 
+function hasValidDirectory(dir) {
+  if (!dir) {
+    logger.log("No directory given...returning...");
+    return false;
+  }
+  else if (!fs.existsSync(dir)) {
+    logger.log(`Directory ${dir} does not exist...returning...`);
+    return false;
+  } else {
+    return true;
+  }
+}
+
 function hasInvalidUrlsAndDir(urls, dir) {
   if (!urls || !Array.isArray(urls)) {
     logger.log("bad urls value detected...returning...");
     return true;
   }
-  else if (!dir) {
-    // No-op if no directory specified
-    logger.log("No directory given...returning...");
-    return true;
-  }
-  else if (!fs.existsSync(dir)) {
-    // No-op if the directory doesn't exist
-    logger.log(`Directory ${dir} does not exist...returning...`);
-    return true;
-  } else {
-    return false;
-  }
+
+  return !hasValidDirectory(dir);
 }
+
+ipcMain.on('check-directory', (event, { dir }) => {
+  event.returnValue = hasValidDirectory(dir);
+});
 
 ipcMain.on('check-urls', (event, { urls, dir }) => {
   if (hasInvalidUrlsAndDir(urls, dir)) {

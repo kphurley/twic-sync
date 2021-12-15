@@ -1,4 +1,7 @@
 // exposed as part of preload.js (contextBridge)
+export function checkValidDirectory(dir) {
+  return window.electron.checkDirectory(dir);
+}
 
 export function checkUrlsForSync(urls, dir) {
   return window.electron.checkUrls(urls, dir);
@@ -11,8 +14,3 @@ export function performSync(urls, dir) {
 export function registerHandler(event, handler) {
   return window.electron.registerHandler(event, handler);
 }
-
-export function documentsDir() {
-  return window.electron.documentsDir;
-}
-

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { MainScreen, SyncScreen } from './components';
 
 import { getTwicUrlStatuses } from './utilities/scraper';
-import { registerHandler, performSync, documentsDir } from './utilities/fileHandlers';
+import { checkValidDirectory, registerHandler, performSync } from './utilities/fileHandlers';
 
 import './App.css';
 
@@ -11,6 +11,7 @@ const APP_STATES = {
   SYNCHING: "syncing",
   DATA_AVAILABLE: "dataAvailable",
   UP_TO_DATE: "upToDate",
+  INVALID_DIRECTORY: "invalidDirectory",
   ERRORED: "errored",
   DOWNLOADING_FILES: "downloadingFiles",
   SELECTING_FILES: "selectingFiles"
@@ -20,7 +21,8 @@ const MAIN_SCREEN_STATES = [
   APP_STATES.SYNCHING,
   APP_STATES.DATA_AVAILABLE,
   APP_STATES.UP_TO_DATE,
-  APP_STATES.ERRORED
+  APP_STATES.ERRORED,
+  APP_STATES.INVALID_DIRECTORY
 ]
 
 export default function App() {
@@ -43,12 +45,18 @@ export default function App() {
     setUrlStatuses(newUrlStatuses);
   };
 
-  // This should run on load
-  const getUrlStatusesAndSetAppState = () => {{
+  const getUrlStatusesAndSetAppState = (directory) => {
+    const hasValidDirectory = checkValidDirectory(directory);
+
+    if (!hasValidDirectory) {
+      setAppState(APP_STATES.INVALID_DIRECTORY);
+      return;
+    }
+
     setAppState(APP_STATES.SYNCHING);
 
     return getTwicUrlStatuses(directory).then(handleUrlStatuses).catch((e) => console.error(e));
-  }};
+  };
 
   const goToFileSelectionScreen = () => {{
     setAppState(APP_STATES.SELECTING_FILES);
@@ -63,16 +71,17 @@ export default function App() {
   };
 
   useEffect(() => {
-    getUrlStatusesAndSetAppState();
-
     registerHandler('sync-urls-reply', handleUrlStatuses);
-  }, []);
+  },  []);
+
+  useEffect(() => {
+    getUrlStatusesAndSetAppState(directory);
+  }, [directory]);
 
   const onDirectoryChange = (e) => {
     const newDir = e.target.value;
     window.localStorage.setItem('directory', newDir);
     setDirectory(newDir);
-    getUrlStatusesAndSetAppState();
   }
 
   const shouldRenderMainScreen = MAIN_SCREEN_STATES.includes(appState);
@@ -82,8 +91,8 @@ export default function App() {
     directory,
     onDirectoryChange,
     setAppState,
-    onBackButtonPress: getUrlStatusesAndSetAppState,
-    onRefresh: getUrlStatusesAndSetAppState,
+    onBackButtonPress: () => getUrlStatusesAndSetAppState(directory),
+    onRefresh: () => getUrlStatusesAndSetAppState(directory),
     onSyncInit: goToFileSelectionScreen,
     onSync: downloadSelectedFiles
   };
