@@ -1,13 +1,29 @@
 import React from 'react';
 
+import FormInput from '../shared/FormInput';
 import Layout from '../shared/Layout';
 
-export default function OptionsPanel(props) {
-  // TODO - onChange and directory should be provided
+const TWIC_TOOLTIP_TEXT = "Lower bound of the article number to sync"
+
+
+export default function OptionsPanel({ directory, onDirectoryChange, onTwicNumberChange, twicNumber }) {
   return (
     <Layout type="flex-vertical" className="OptionsPanel">
-      <label for="directory">Local File Directory</label>
-      <input type="text" id="directory" name="directory" value={props.directory} onChange={props.onDirectoryChange}></input>
+      <FormInput
+        handler={onDirectoryChange}
+        labelText="Local File Directory"
+        name="directory"
+        type="text"
+        value={directory}
+      />
+      <FormInput
+        handler={onTwicNumberChange}
+        labelText="TWIC Number (optional)"
+        name="twic-number"
+        tooltip={TWIC_TOOLTIP_TEXT}
+        type="number"
+        value={twicNumber}
+      />
     </Layout>
   )
 };

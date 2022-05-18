@@ -166,3 +166,22 @@ input {
 .unselected {
   background-color: #FFFFFF;
 }
+
+/* This is to globally disable the arrows from inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.form-input-container {
+  margin: 8px 0px 8px 0px;
+}
+
+.tooltip-anchor {
+  float: right;
+}
+
+.InfoIcon {
+  height: 16px;
+}

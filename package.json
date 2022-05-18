@@ -5,7 +5,7 @@
   "main": "./main.js",
   "scripts": {
     "build": "webpack",
-    "start": "electron-forge start",
+    "start": "electron-forge start -- -withDevTools",
     "package": "electron-forge package",
     "make": "electron-forge make"
   },
@@ -46,7 +46,8 @@
     "electron-squirrel-startup": "^1.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-spinners": "^0.11.0"
+    "react-spinners": "^0.11.0",
+    "react-tooltip": "^4.2.21"
   },
   "config": {
     "forge": {
