@@ -1,6 +1,6 @@
 {
   "name": "twic-sync",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A TWIC file sync and download tool",
   "main": "./main.js",
   "scripts": {
