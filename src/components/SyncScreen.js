@@ -5,6 +5,8 @@ import Button from './shared/Button';
 
 import SyncLoader from "react-spinners/SyncLoader";
 
+import { extractTwicNumberFromUrl } from '../utilities/twicNumbers';
+
 function SyncScreenFooter(props) {
   const isDownloadingFiles = props.appState === "downloadingFiles";
 
@@ -39,9 +41,14 @@ function getFileNameFromUrl(url) {
 }
 
 export default function SyncScreen(props) {
-  const unsynchedUrls = props.urlStatuses.filter((u) => u.status === "unsynched").map((status) => status.url);
+  const unsynchedUrlsGreaterThanTwicNumber = props.urlStatuses
+    .filter((urlStatus) => 
+      extractTwicNumberFromUrl(urlStatus.url) > parseInt(props.twicNumber) &&
+      urlStatus.status === "unsynched"
+    )
+    .map((status) => status.url);
   const initialState = {}
-  unsynchedUrls.forEach((url) => initialState[url] = true);
+  unsynchedUrlsGreaterThanTwicNumber.forEach((url) => initialState[url] = true);
 
   // Format is: { [url]: true | false }
   const [ selectedUrls, setSelectedUrls ] = useState(initialState);

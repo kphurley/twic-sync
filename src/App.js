@@ -29,7 +29,7 @@ export default function App() {
   const [ appState, setAppState ] = useState(APP_STATES.SYNCHING);
   const [ urlStatuses, setUrlStatuses ] = useState([]);
   const [ directory, setDirectory ] = useState(window.localStorage.getItem('directory'));
-  const [ twicNumber, setTwicNumber ] = useState(null);
+  const [ twicNumber, setTwicNumber ] = useState("0");
 
   const handleUrlStatuses = (newUrlStatuses) => {
     const hasUnsynchedUrls = newUrlStatuses && !!(newUrlStatuses.find((u) => u.status === "unsynched"));

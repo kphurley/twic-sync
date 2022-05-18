@@ -5,7 +5,6 @@ import Layout from '../shared/Layout';
 
 const TWIC_TOOLTIP_TEXT = "Lower bound of the article number to sync"
 
-
 export default function OptionsPanel({ directory, onDirectoryChange, onTwicNumberChange, twicNumber }) {
   return (
     <Layout type="flex-vertical" className="OptionsPanel">
