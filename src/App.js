@@ -29,6 +29,7 @@ export default function App() {
   const [ appState, setAppState ] = useState(APP_STATES.SYNCHING);
   const [ urlStatuses, setUrlStatuses ] = useState([]);
   const [ directory, setDirectory ] = useState(window.localStorage.getItem('directory'));
+  const [ twicNumber, setTwicNumber ] = useState(null);
 
   const handleUrlStatuses = (newUrlStatuses) => {
     const hasUnsynchedUrls = newUrlStatuses && !!(newUrlStatuses.find((u) => u.status === "unsynched"));
@@ -84,12 +85,19 @@ export default function App() {
     setDirectory(newDir);
   }
 
+  const onTwicNumberChange = (e) => {
+    const newNumber = e.target.value;
+    setTwicNumber(newNumber);
+  }
+
   const shouldRenderMainScreen = MAIN_SCREEN_STATES.includes(appState);
   const screenProps = { 
     appState,
     urlStatuses,
     directory,
+    twicNumber,
     onDirectoryChange,
+    onTwicNumberChange,
     setAppState,
     onBackButtonPress: () => getUrlStatusesAndSetAppState(directory),
     onRefresh: () => getUrlStatusesAndSetAppState(directory),
