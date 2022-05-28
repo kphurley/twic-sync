@@ -3,7 +3,14 @@ import React from 'react';
 import FormInput from '../shared/FormInput';
 import Layout from '../shared/Layout';
 
-const TWIC_TOOLTIP_TEXT = "Lower bound of the article number to sync"
+// The text is arranged one element per line
+// which is why it's an array
+const DIRECTORY_TOOLTIP_TEXT = [
+  "Directory to save your files",
+  "Windows example: 'C:/some/path'",
+  "Mac example: '/some/path'"
+]
+const TWIC_TOOLTIP_TEXT = ["Lower bound of the article number to sync"]
 
 export default function OptionsPanel({ directory, onDirectoryChange, onTwicNumberChange, twicNumber }) {
   return (
@@ -12,6 +19,7 @@ export default function OptionsPanel({ directory, onDirectoryChange, onTwicNumbe
         handler={onDirectoryChange}
         labelText="Local File Directory"
         name="directory"
+        tooltip={DIRECTORY_TOOLTIP_TEXT}
         type="text"
         value={directory}
       />

@@ -21,7 +21,7 @@ export default function FormInput({
         {tooltip && <a className="tooltip-anchor" data-tip data-for={tooltipId}><TooltipIcon /></a>}
         {tooltip &&
           <ReactTooltip id={tooltipId}>
-            <span>{tooltip}</span>
+            { tooltip.map((text) => <div>{text}</div> )}
           </ReactTooltip>
         }
       </label>
