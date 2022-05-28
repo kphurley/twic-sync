@@ -101,6 +101,8 @@ input {
 }
 
 .Footer {
+  display: flex;
+  flex-direction: row;
   padding: 8px;
 }
 
@@ -116,13 +118,28 @@ input {
   justify-content: flex-end;
 }
 
-.LinkToCavemanChess {
+.ProjectGithubLink {
+  font-size: small;
   display: flex;
+  flex: 1;
+  justify-content: flex-end;
+  flex-direction: column;
+  align-items: center;
+}
+
+.LinkToCavemanChess {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  font-size: small;
   justify-self: flex-end;
 }
 
 .DonateToTwicPanel {
   align-self: flex-end;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
   font-size: small;
 }
 
